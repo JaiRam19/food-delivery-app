@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: ADDRESS-SERVICE
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/food_app_address_db
+    username: postgres
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      properties:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+server:
+  port: 8084
+
+#To make this user service register with eureka server
+#we need to provide eureka server url
+eureka:
+  instance:
+    client:
+      serverUrl:
+        defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    #root: debug
+    com.codewave.addressService.service.Impl.AddressServiceImpl: debug
+
+
