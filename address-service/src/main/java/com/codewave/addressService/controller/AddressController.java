@@ -2,8 +2,10 @@ package com.codewave.addressService.controller;
 
 import com.codewave.addressService.dto.APIResponse;
 import com.codewave.addressService.dto.AddressDto;
+import com.codewave.addressService.dto.zipcodeAPIResponse.ApiResponseDTO;
 import com.codewave.addressService.mapper.AddressMapper;
 import com.codewave.addressService.service.AddressService;
+import com.codewave.addressService.service.ZipcodeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ public class AddressController {
     private static final String SUCCESS = "Success";
     private AddressService addressService;
     private AddressMapper addressMapper;
+    private ZipcodeService zipcodeService;
 
     //add address
     @PostMapping("/add")
@@ -73,6 +76,12 @@ public class AddressController {
     public ResponseEntity<AddressDto> getAddressByUserAndAddressIds(@RequestParam("userId") Long userId,
                                                                     @RequestParam("addressId") Long addressId){
         return ResponseEntity.ok(addressService.getAddressByUserIdAndAddressId(userId, addressId));
+    }
+
+    //get zipcode data
+    @GetMapping("/search-zipcode")
+    public ResponseEntity<ApiResponseDTO> getZipcodeDataByCode(@RequestParam("zipcode") String code){
+        return ResponseEntity.ok(zipcodeService.fetchZipCodeData(code));
     }
 
 }
