@@ -1,5 +1,6 @@
 package com.codewave.userservice.service.Impl;
 
+import com.codewave.userservice.dto.BulkRegistrationStatus;
 import com.codewave.userservice.dto.UserDto;
 import com.codewave.userservice.entity.User;
 import com.codewave.userservice.exception.APIException;
@@ -8,17 +9,22 @@ import com.codewave.userservice.mapper.UserMapper;
 import com.codewave.userservice.repository.UserRepository;
 import com.codewave.userservice.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
     private UserMapper userMapper;
+    private BulkUsersRegistrationService bulkService;
 
     @Override
     public UserDto register(UserDto userDto) {
@@ -92,5 +98,16 @@ public class UserServiceImpl implements UserService {
        return userRepository.findAll().stream()
                 .map(userMapper::mapToDto)
                 .toList();
+    }
+
+    @Override
+    public BulkRegistrationStatus bulkRegistration(MultipartFile file) {
+        log.info("UserServiceImpl::bulkRegistration() method execution started");
+        String fileName = Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
+        log.info("input file name {}", fileName);
+        if(!fileName.endsWith(".csv")){
+            throw new APIException("Invalid file format", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        }
+        return bulkService.initialResponse(file);
     }
 }

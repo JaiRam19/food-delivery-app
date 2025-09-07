@@ -1,7 +1,9 @@
 package com.codewave.userservice.service;
 
+import com.codewave.userservice.dto.BulkRegistrationStatus;
 import com.codewave.userservice.dto.UserDto;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,4 +14,5 @@ public interface UserService {
     UserDto updateUser(UserDto userDto);
     String deleteUserById(Long userId);
     List<UserDto> findAllUsers();
+    BulkRegistrationStatus bulkRegistration(MultipartFile file);
 }
