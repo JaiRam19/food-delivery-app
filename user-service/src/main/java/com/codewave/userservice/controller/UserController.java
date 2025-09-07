@@ -1,11 +1,14 @@
 package com.codewave.userservice.controller;
 
+import com.codewave.userservice.dto.BulkRegistrationStatus;
 import com.codewave.userservice.dto.UserDto;
+import com.codewave.userservice.service.Impl.BulkUsersRegistrationService;
 import com.codewave.userservice.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,6 +17,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("api/users")
 public class UserController {
+
     private UserService userService;
 
     //register user
@@ -46,5 +50,11 @@ public class UserController {
     @GetMapping("/all-users")
     public ResponseEntity<List<UserDto>> findAllUsers(){
         return ResponseEntity.ok(userService.findAllUsers());
+    }
+
+    @PostMapping("/bulk-register")
+    public ResponseEntity<BulkRegistrationStatus> bulkUsersRegistration(@RequestParam("file") MultipartFile file){
+        return ResponseEntity.accepted().body(userService.bulkRegistration(file));
+
     }
 }
