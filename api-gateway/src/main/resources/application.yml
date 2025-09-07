@@ -1,0 +1,55 @@
+# --> port details
+server:
+  port: 9191
+
+#--> we need to provide eureka server url to make this api-gateway register with eureka server
+eureka:
+  instance:
+    client:
+      serverUrl:
+        defaultZone: http://localhost:8761/eureka/
+
+#--> Eureka server uses this application name as service id for this department service
+spring:
+  application:
+    name: API-GATEWAY
+
+  # Gateway is reactive; this enforces reactive mode explicitly (optional).
+#  main:
+#    web-application-type: reactive
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+              lower-case-service-id: true
+
+      #--> Routes for product service
+          routes:
+           - id: PRODUCT-SERVICE
+             uri: lb://PRODUCT-SERVICE
+             predicates:
+              - Path=/api/products/**
+          #--> Routes for order service
+           - id: ORDER-SERVICE
+             uri: lb://ORDER-SERVICE
+             predicates:
+                - Path=/api/orders/**
+          #--> Routes for user service
+           - id: USER-SERVICE
+             uri: lb://USER-SERVICE
+             predicates:
+                - Path=/api/users/**
+          #--> Routes for analytics service
+           - id: ANALYTICS-SERVICE
+             uri: lb://ANALYTICS-SERVICE
+             predicates:
+                - Path=/api/analytics/**
+          #--> Routes for address service
+           - id: ADDRESS-SERVICE
+             uri: lb://ADDRESS-SERVICE
+             predicates:
+               - Path=/api/address/**
