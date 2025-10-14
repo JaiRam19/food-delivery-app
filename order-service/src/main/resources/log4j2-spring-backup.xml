@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <Appenders>
+        <!-- Console appender for all logs -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <!-- Splunk HTTP Event Collector Appender -->
+        <SplunkHttp
+            name="Splunk"
+            url="http://localhost:8088"
+            token="3aeda331-509d-4772-b680-e1204ff54fc2"
+            host="localhost"
+            source="http:order-service"
+            sourceType="log4j"
+            index="microservices_dev"
+            messageFormat="text"
+            disableCertificateValidation="false"
+            batch_size_count="5"
+            batch_interval="2000">
+            <PatternLayout pattern="{ &quot;time&quot;:&quot;%d{ISO8601}&quot;, &quot;level&quot;:&quot;%level&quot;, &quot;thread&quot;:&quot;%thread&quot;, &quot;logger&quot;:&quot;%c{1}&quot;, &quot;message&quot;:&quot;%msg&quot; }"/>
+        </SplunkHttp>
+
+        <!-- Async wrapper for Splunk -->
+        <Async name="AsyncSplunk">
+            <AppenderRef ref="Splunk"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <!-- Your application logs (only these go to Splunk) -->
+        <Logger name="com.codewave" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="AsyncSplunk"/>
+        </Logger>
+
+        <!-- Framework & third-party logs -->
+        <Logger name="org.springframework" level="warn" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="org.hibernate" level="warn" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="org.apache" level="warn" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Root logger (default fallback) -->
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+
+</Configuration>

@@ -6,6 +6,7 @@ import com.codewave.orderservice.dto.OrderRequest;
 import com.codewave.orderservice.dto.OrderResponse;
 import com.codewave.orderservice.service.OrderService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/orders")
 @AllArgsConstructor
+@Slf4j
 public class OderController {
 
     private OrderService orderService;
@@ -23,7 +25,9 @@ public class OderController {
     //place order
     @PostMapping("/place")
     public ResponseEntity<OrderResponse> placeOrder(@RequestBody OrderRequest orderRequest) {
+        log.info("OderController:placeOrder method execution started...");
         OrderResponse order = orderService.receiveOrder(orderRequest);
+        log.info("OderController:placeOrder method execution ended...");
         return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
     }
 
@@ -61,7 +65,9 @@ public class OderController {
     //get all orders
     @GetMapping("all-orders")
     public ResponseEntity<List<OrderDto>> getAllOrders() {
+        log.info("OderController:getAllOrders method execution started...");
         List<OrderDto> allOrders = orderService.getAllOrders();
+        log.info("OderController:getAllOrders method execution ended...");
         return ResponseEntity.ok(allOrders);
     }
 

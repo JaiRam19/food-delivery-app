@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <Appenders>
+        <!-- Console appender for local debugging -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <!-- Splunk HTTP Event Collector Appender -->
+        <SplunkHttp
+                name="Splunk"
+                url="http://localhost:8088"
+                token="3aeda331-509d-4772-b680-e1204ff54fc2"
+                host="localhost"
+                source="http:order-service"
+                sourceType="log4j"
+                index="microservices_dev"
+                messageFormat="text"
+                disableCertificateValidation="false"
+                batch_size_count="1"
+                batch_interval="1000">
+
+            <!-- JSON pattern for Splunk event -->
+            <PatternLayout pattern="{ &quot;time&quot;:&quot;%d{ISO8601}&quot;, &quot;level&quot;:&quot;%level&quot;, &quot;thread&quot;:&quot;%thread&quot;, &quot;logger&quot;:&quot;%c{1}&quot;, &quot;message&quot;:&quot;%msg&quot;, &quot;exception&quot;:&quot;%ex{full}&quot; }"/>
+        </SplunkHttp>
+
+        <!-- Async wrapper for Splunk appender -->
+        <Async name="AsyncSplunk">
+            <AppenderRef ref="Splunk"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <!-- Application package logger -->
+        <Logger name="com.codewave.orderservice" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="AsyncSplunk"/>
+        </Logger>
+
+        <!-- Root logger -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="AsyncSplunk"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
