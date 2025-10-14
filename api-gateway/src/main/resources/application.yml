@@ -53,3 +53,8 @@ spring:
              uri: lb://ADDRESS-SERVICE
              predicates:
                - Path=/api/address/**
+          #--> Routes for auth service
+           - id: AUTH-SERVICE
+             uri: lb://AUTH-SERVICE
+             predicates:
+               - Path=/api/auth/**

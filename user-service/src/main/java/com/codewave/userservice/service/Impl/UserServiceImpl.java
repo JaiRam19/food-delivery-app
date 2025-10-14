@@ -2,18 +2,28 @@ package com.codewave.userservice.service.Impl;
 
 import com.codewave.userservice.dto.BulkRegistrationStatus;
 import com.codewave.userservice.dto.UserDto;
+import com.codewave.userservice.dto.UserRequest;
+import com.codewave.userservice.entity.BulkRegisterRequest;
 import com.codewave.userservice.entity.User;
+import com.codewave.userservice.entity.UserPreferences;
 import com.codewave.userservice.exception.APIException;
 import com.codewave.userservice.exception.ResourceNotFoundException;
+import com.codewave.userservice.mapper.BulkRequestMapper;
+import com.codewave.userservice.mapper.PreferenceMapper;
 import com.codewave.userservice.mapper.UserMapper;
+import com.codewave.userservice.repository.BulkRegisterRequestRepository;
+import com.codewave.userservice.repository.PreferenceRepository;
 import com.codewave.userservice.repository.UserRepository;
 import com.codewave.userservice.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,23 +33,47 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+    private PreferenceRepository preferenceRepository;
     private UserMapper userMapper;
+    private PreferenceMapper preferenceMapper;
     private BulkUsersRegistrationService bulkService;
+    private BulkRegisterRequestRepository bulkRepo;
+    private BulkRequestMapper bulkRequestMapper;
+    //private UserRegions regions;
 
     @Override
-    public UserDto register(UserDto userDto) {
+    @Transactional
+    public UserRequest register(UserRequest request) {
         //verify if the new user's email and phone number are already present
-        if(userRepository.existsByEmail(userDto.getEmail())) {
+      /*  if(userRepository.existsByEmail(request.getUserDetails().getEmail())) {
             throw new APIException("Email already linked to another account", HttpStatus.BAD_REQUEST);
         }
-        if(userRepository.existsByPhoneNumber(userDto.getPhoneNumber())) {
+        if(userRepository.existsByPhoneNumber(request.getUserDetails().getPhoneNumber())) {
             throw new APIException("Phone number already linked to another account", HttpStatus.BAD_REQUEST);
-        }
+        }*/
+
 
         //save user
-        User savedUser = userRepository.save(userMapper.mapToEntity(userDto));
+        User savedUser = null;
+        try{
+            savedUser = userRepository.save(userMapper.mapToEntity(request.getUserDetails()));
+        }catch (DataIntegrityViolationException exception){
+            //throw new APIException("Data integrity exception", HttpStatus.CONFLICT);
+            System.out.println("Data integrity");
+        } catch (Exception e) {
+            //throw new APIException("Exception occurred while saving the user details", HttpStatus.BAD_REQUEST);
+            System.out.println("Exception");
+        }
+        System.out.println("Next statements executed");
+        UserPreferences preferences = preferenceMapper.mapToEntity(request.getPreferences());
+        preferences.setUser(savedUser);
+        UserPreferences savedPreferences = preferenceRepository.save(preferences);
+
+        UserRequest userRequest = new UserRequest();
+        userRequest.setUserDetails(userMapper.mapToDto(savedUser));
+        userRequest.setPreferences(preferenceMapper.mapToDto(savedPreferences));
         //convert into dto and return it
-        return userMapper.mapToDto(savedUser);
+        return userRequest;
     }
 
     @Override
@@ -54,7 +88,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto) {
+    public UserDto updateUser(UserDto userDto, Long userId) {
         //verify if the new user's email and phone number are already present
         if(userRepository.existsByEmail(userDto.getEmail())) {
             throw new APIException("Email already linked to another account", HttpStatus.BAD_REQUEST);
@@ -64,10 +98,10 @@ public class UserServiceImpl implements UserService {
         }
 
         //find user before updating whether the user present in the databse or not
-        User user = userRepository.findById(userDto.getUserId()).orElseThrow(
-                () -> new ResourceNotFoundException("user", "userId", String.valueOf(userDto.getUserId())));
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("user", "userId", String.valueOf(userId)));
         //set user fields
-        user.setUserId(userDto.getUserId());
+        user.setUserId(userId);
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
@@ -110,4 +144,19 @@ public class UserServiceImpl implements UserService {
         }
         return bulkService.initialResponse(file);
     }
+
+    @Override
+    public BulkRegistrationStatus checkStatus(String requestId) {
+        log.info("UserService::checkStatus() method execution started");
+        log.debug("input request Id - {}", requestId);
+        BulkRegisterRequest bulkStatus = bulkRepo.findById(requestId).orElseThrow(
+                () -> new APIException("request Id not found", HttpStatus.NOT_FOUND)
+        );
+        return bulkRequestMapper.mapToDto(bulkStatus);
+    }
+
+   /* public String getUserContinentDetails(UserDto user){
+        System.out.println("getUserContinentDetails() - method executed");
+        return regions.findUserContinent(user);
+    }*/
 }

@@ -13,4 +13,8 @@ public class BulkRequestMapper {
     public BulkRegisterRequest mapToEntity(BulkRegistrationStatus statusResponse) {
         return modelMapper.map(statusResponse, BulkRegisterRequest.class);
     }
+
+    public BulkRegistrationStatus mapToDto(BulkRegisterRequest status){
+        return modelMapper.map(status, BulkRegistrationStatus.class);
+    }
 }

@@ -29,4 +29,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserPreferences preferences;
+
 }

@@ -1,8 +1,9 @@
 package com.codewave.userservice.controller;
 
+import com.codewave.userservice.UserServiceApplication;
 import com.codewave.userservice.dto.BulkRegistrationStatus;
 import com.codewave.userservice.dto.UserDto;
-import com.codewave.userservice.service.Impl.BulkUsersRegistrationService;
+import com.codewave.userservice.dto.UserRequest;
 import com.codewave.userservice.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,8 @@ public class UserController {
 
     //register user
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody UserDto userDto) {
-        UserDto registerUser = userService.register(userDto);
+    public ResponseEntity<UserRequest> register(@RequestBody UserRequest request) {
+        UserRequest registerUser = userService.register(request);
         return new ResponseEntity<>(registerUser, HttpStatus.CREATED);
     }
 
@@ -34,9 +35,9 @@ public class UserController {
     }
 
     //update user details
-    @PutMapping("/update")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
-        UserDto updateUser = userService.updateUser(userDto);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable(name = "id") Long id, @RequestBody UserRequest request) {
+        UserDto updateUser = userService.updateUser(request.getUserDetails(), id);
         return ResponseEntity.ok(updateUser);
     }
 
@@ -55,6 +56,10 @@ public class UserController {
     @PostMapping("/bulk-register")
     public ResponseEntity<BulkRegistrationStatus> bulkUsersRegistration(@RequestParam("file") MultipartFile file){
         return ResponseEntity.accepted().body(userService.bulkRegistration(file));
+    }
 
+    @GetMapping("/bulk-status/{requestId}")
+    public ResponseEntity<BulkRegistrationStatus> bulkUserRegistrationStatus(@PathVariable("requestId") String requestId){
+        return ResponseEntity.ok(userService.checkStatus(requestId));
     }
 }

@@ -15,6 +15,9 @@ import com.codewave.orderservice.service.ProductClient;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -40,8 +43,11 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
     private OrderItemMapper orderItemMapper;
 
+
     @Override
     public OrderResponse receiveOrder(OrderRequest orderRequest) {
+        log.info("OrderServiceImpl:receiveOrder method execution started...");
+        log.info("input items in orderRequest {}", orderRequest.getItems());
         //get all product details from product service
         CompletableFuture<List<ProductDto>> orderedProductsFuture = CompletableFuture.supplyAsync(() -> orderRequest.getItems().stream()
                 .map(order ->
@@ -103,6 +109,7 @@ public class OrderServiceImpl implements OrderService {
                         orderedItem.getQuantity()))
                 .toList();
         orderItemsRepository.saveAll(orderItems);
+        log.info("OrderServiceImpl:receiveOrder method execution ended...");
         return mapToOrderResponse(savedOrder.getId());
     }
 
@@ -135,9 +142,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDto> getAllOrders() {
-        return orderRepository.findAll().stream()
+        log.info("OrderServiceImpl:getAllOrders method execution started...");
+        List<OrderDto> list = orderRepository.findAll().stream()
                 .map(order -> orderMapper.mapToDto(order))
                 .toList();
+        log.info("OrderServiceImpl:getAllOrders method execution ended...");
+        return list;
     }
 
     @Override

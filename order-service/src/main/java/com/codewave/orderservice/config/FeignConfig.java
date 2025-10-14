@@ -8,6 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FeignConfig {
 
+    public FeignConfig(){
+        System.out.println("Feign config class imported..");
+    }
+
     @Bean
     public ErrorDecoder errorDecoder(){
         return new CustomFeignErrorDecoder();

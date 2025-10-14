@@ -1,4 +1,8 @@
 spring:
+  config:
+    import: C:\Users\jayar\Desktop\test.yaml
+  main:
+    allow-bean-definition-overriding: true
 
   application:
     name: USER-SERVICE
@@ -27,6 +31,20 @@ eureka:
     client:
       serverUrl:
         defaultZone: http://localhost:8761/eureka/
+
+
+#debug: true
+
+simple:
+  message: TESTING
+
+employee:
+     name: Jaya Ram
+
+manager:
+     age: 25
+
+
 
 
 
