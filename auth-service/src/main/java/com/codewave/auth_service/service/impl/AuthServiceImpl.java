@@ -97,12 +97,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public String validateToken(String token) {
+        System.out.println("AuthServiceImpl:validateToken method execution started");
         try {
             jwtService.validateToken(token);
             return "Token is Valid";
         } catch (Exception e) {
+            System.out.println("AuthServiceImpl:validateToken exception occurred "+e.getMessage());
             throw new APIException("Invalid Token", HttpStatus.BAD_REQUEST);
         }
+
     }
 
 }

@@ -20,11 +20,25 @@ server:
 
 #To make this user service register with eureka server
 #we need to provide eureka server url
-eureka:
-  instance:
-    client:
-      serverUrl:
-        defaultZone: http://localhost:8761/eureka/
+#eureka:
+#  instance:
+#    client:
+#     serverUrl:
+#        defaultZone: http://localhost:8761/eureka/
+#      fetch-registry: true
+#      register-with-eureka: true
 
+# Corrected Eureka configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+
+#Secret key for jwt generation
 secret:
     key: a2fc70d8032e3945874204f478af88abe5a08eb185c95f005a206dbec19d9261
