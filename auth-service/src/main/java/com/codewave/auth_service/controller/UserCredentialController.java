@@ -1,9 +1,12 @@
 package com.codewave.auth_service.controller;
 
 import com.codewave.auth_service.dto.UserLoingDto;
+import com.codewave.auth_service.dto.UserPrivilegesDto;
 import com.codewave.auth_service.dto.UserRegisterDto;
-import com.codewave.auth_service.dto.UserRolesAndPrivilegesDto;
+import com.codewave.auth_service.dto.UserRolesDto;
 import com.codewave.auth_service.service.AuthService;
+import com.codewave.auth_service.service.PrivilegeService;
+import com.codewave.auth_service.service.RolesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 public class UserCredentialController {
+
     @Autowired
     private AuthService service;
+    @Autowired
+    private RolesService rolesService;
+    @Autowired
+    private PrivilegeService privilegeService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserRegisterDto registerDto){
@@ -31,24 +39,31 @@ public class UserCredentialController {
         return ResponseEntity.ok(service.validateToken(token));
     }
 
-    @PostMapping("/admin/manage")
-    public ResponseEntity<?> manageRolesAndPrivileges(@RequestBody UserRolesAndPrivilegesDto rolesAndPrivileges){
-        return ResponseEntity.ok(service.manageRolesAndPrivileges(rolesAndPrivileges));
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/admin/manage/roles")
+    public ResponseEntity<UserRolesDto> manageRoles(@RequestBody UserRolesDto roleDto){
+        return ResponseEntity.ok(rolesService.manageRoles(roleDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/admin/manage/privileges")
+    public ResponseEntity<UserPrivilegesDto> managePrivileges(@RequestBody UserPrivilegesDto privilegesDto){
+        return ResponseEntity.ok(privilegeService.managePrivileges(privilegesDto));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/admin/welcome")
     public ResponseEntity<String> adminWelcome(){
         return ResponseEntity.ok("Admin, Welcome to spring security implementation demo...");
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
     @GetMapping("/manager/welcome")
     public ResponseEntity<String> managerWelcome(){
         return ResponseEntity.ok("Manager, Welcome to spring security implementation demo...");
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
     @GetMapping("/user/welcome")
     public ResponseEntity<String> userWelcome(){
         return ResponseEntity.ok("User, Welcome to spring security implementation demo...");

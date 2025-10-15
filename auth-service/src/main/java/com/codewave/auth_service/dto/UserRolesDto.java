@@ -3,6 +3,7 @@ package com.codewave.auth_service.dto;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Component
@@ -10,8 +11,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRolesAndPrivilegesDto {
+public class UserRolesDto {
     private String username;
-    private Set<String> roles;
-    private Set<String> privileges;
+    private Set<String> roles = new HashSet<>();
 }

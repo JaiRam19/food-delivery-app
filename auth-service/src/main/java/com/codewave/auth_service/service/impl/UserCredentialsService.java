@@ -19,8 +19,8 @@ public class UserCredentialsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserCredentials> userDetails = Optional.ofNullable(repository.findByUsername(username).orElseThrow(
-                () -> new APIException("User not found for username: " + username, HttpStatus.NOT_FOUND)));
-        return new CustomUserDetails(userDetails.get());
+        UserCredentials userDetails = repository.findByUsername(username).orElseThrow(
+                () -> new APIException("User not found for username: " + username, HttpStatus.NOT_FOUND));
+        return new CustomUserDetails(userDetails);
     }
 }

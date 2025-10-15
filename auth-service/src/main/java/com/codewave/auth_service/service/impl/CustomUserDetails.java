@@ -34,7 +34,7 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> rolesAndPrivileges = new HashSet<>();
         //add roles
-        roles.forEach(role -> rolesAndPrivileges.add(new SimpleGrantedAuthority("ROLE_"+role.getRole())));
+        roles.forEach(role -> rolesAndPrivileges.add(new SimpleGrantedAuthority(role.getRole())));
 
         //add privileges
         privileges.forEach(privileges -> rolesAndPrivileges.add(new SimpleGrantedAuthority(privileges.getPrivilege())));
