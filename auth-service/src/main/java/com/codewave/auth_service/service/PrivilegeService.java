@@ -1,9 +1,12 @@
 package com.codewave.auth_service.service;
 
+import com.codewave.auth_service.dto.UserPrivilegesDto;
 import com.codewave.auth_service.entity.UserCredentials;
 import com.codewave.auth_service.entity.UserPrivileges;
 
-public interface PrivilegeService {
+import java.util.Set;
 
-    UserPrivileges createUserPrivilege(UserCredentials user, String privilege);
+public interface PrivilegeService {
+    Set<UserPrivileges> createUserPrivileges(UserCredentials user, Set<String> inputPrivileges);
+    UserPrivilegesDto managePrivileges(UserPrivilegesDto privilegesDto);
 }

@@ -1,10 +1,12 @@
-package com.codewave.auth_service.service.impl;
+package com.codewave.auth_service.service.jwt;
 
+import com.codewave.auth_service.entity.UserCredentials;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -23,9 +25,14 @@ public class JwtService {
         return createToken(claims, username);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         extractUsername(token);
-        return !isTokenExpired(token);
+        isTokenExpired(token);
+    }
+
+    public boolean validateToken(UserDetails credentials, String jwtToken) {
+        final String username = extractUsername(jwtToken);
+        return username.equals(credentials.getUsername()) && !isTokenExpired(jwtToken);
     }
 
     private String createToken(Map<String, Object> claims, String username) {
