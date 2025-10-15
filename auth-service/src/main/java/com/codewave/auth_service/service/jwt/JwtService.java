@@ -25,9 +25,10 @@ public class JwtService {
         return createToken(claims, username);
     }
 
-    public void validateToken(String token) {
+    public void validateToken(String token) throws Exception{
         extractUsername(token);
         isTokenExpired(token);
+        extractAllClaims(token);
     }
 
     public boolean validateToken(UserDetails credentials, String jwtToken) {
