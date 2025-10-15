@@ -21,7 +21,6 @@ server:
 
 #To make this user service register with eureka server
 #we need to provide eureka server url
-# Corrected Eureka configuration
 eureka:
   client:
     service-url:
@@ -30,3 +29,5 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: true
+
+
