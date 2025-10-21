@@ -12,7 +12,20 @@ spring:
       properties:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
-
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9093
+    # Consumer Configuration
+    consumer:
+      group-id: analytics-service-group  # ← Important: unique for analytics service
+      auto-offset-reset: earliest  # Read from beginning if no offset exists
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
 server:
   port: 8085
 

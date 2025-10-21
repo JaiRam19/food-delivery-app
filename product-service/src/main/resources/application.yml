@@ -15,7 +15,11 @@ spring:
           dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/jairam1
 server:
   port: 8083
 
@@ -29,5 +33,11 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: true
+
+#Secret key for jwt generation
+secret:
+  key: a2fc70d8032e3945874204f478af88abe5a08eb185c95f005a206dbec19d9261
+
+
 
 

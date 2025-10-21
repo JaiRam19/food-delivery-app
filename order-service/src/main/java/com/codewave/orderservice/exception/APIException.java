@@ -11,4 +11,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class APIException extends RuntimeException{
     private CustomErrorResponse errorResponse;
+
+    public APIException(String message){
+        super(message);
+    }
 }

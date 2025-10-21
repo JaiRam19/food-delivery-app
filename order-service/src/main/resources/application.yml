@@ -15,8 +15,26 @@ spring:
         hibernate:
           dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9093
+    # Producer Configuration
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/jairam1
 server:
-  port: 8080
+  port: 8082
 
 #To make this user service register with eureka server
 #we need to provide eureka server url
@@ -29,3 +47,19 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: true
+
+user:
+  service:
+    url: http://localhost:8081/api/users
+
+address:
+  service:
+    url: http://localhost:8084/api/address
+
+product:
+  service:
+    url: http://localhost:8083/api/products
+
+#logging:
+#  level:
+#    com.codewave.orderservice.client: ERROR

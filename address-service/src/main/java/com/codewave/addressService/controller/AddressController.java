@@ -84,4 +84,9 @@ public class AddressController {
         return ResponseEntity.ok(zipcodeService.fetchZipCodeData(code));
     }
 
+    @GetMapping("/validate/{userId}/{addressId}")
+    public ResponseEntity<Boolean> validateAddress(@PathVariable("userId") Long userId, @PathVariable("addressId") Long addressId){
+        return ResponseEntity.ok(true);
+    }
+
 }

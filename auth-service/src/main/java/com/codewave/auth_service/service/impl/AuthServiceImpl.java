@@ -75,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
                     loginDetails.getPassword()));
 
             if (authenticate.isAuthenticated()) {
-                return jwtService.generateToken(loginDetails.getUsername());
+                return jwtService.generateToken(authenticate);
             } else {
                 throw new APIException("Invalid credentials", HttpStatus.UNAUTHORIZED);
             }
