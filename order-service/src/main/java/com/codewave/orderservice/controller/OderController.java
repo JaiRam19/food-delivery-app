@@ -4,6 +4,7 @@ import com.codewave.orderservice.dto.OrderDto;
 import com.codewave.orderservice.dto.OrderItemDto;
 import com.codewave.orderservice.dto.OrderRequest;
 import com.codewave.orderservice.dto.OrderResponse;
+import com.codewave.orderservice.service.Impl.OrderCreationService;
 import com.codewave.orderservice.service.OrderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +22,18 @@ import java.util.List;
 public class OderController {
 
     private OrderService orderService;
+    private OrderCreationService service;
 
     //place order
-    @PostMapping("/place")
-    public ResponseEntity<OrderResponse> placeOrder(@RequestBody OrderRequest orderRequest) {
+    @PostMapping("/{version}/place")
+    public ResponseEntity<?> placeOrder(@PathVariable("version") String version,@RequestBody OrderRequest orderRequest) {
         log.info("OderController:placeOrder method execution started...");
-        OrderResponse order = orderService.receiveOrder(orderRequest);
+        OrderResponse order;
+        if(version.equalsIgnoreCase("v2")){
+            return ResponseEntity.status(HttpStatus.CREATED).body(service.createOrder(orderRequest));
+        }else {
+            order = orderService.receiveOrder(orderRequest);
+        }
         log.info("OderController:placeOrder method execution ended...");
         return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
     }

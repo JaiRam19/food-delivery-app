@@ -1,6 +1,5 @@
 package com.codewave.userservice.controller;
 
-import com.codewave.userservice.UserServiceApplication;
 import com.codewave.userservice.dto.BulkRegistrationStatus;
 import com.codewave.userservice.dto.UserDto;
 import com.codewave.userservice.dto.UserRequest;
@@ -8,6 +7,7 @@ import com.codewave.userservice.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +29,7 @@ public class UserController {
     }
 
     //get user by id
+    @PreAuthorize("hasRole('ROLE_USER') and hasAnyAuthority('READ_PRIVILEGE')")
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable("userId") Long id) {
         return ResponseEntity.ok(userService.getUserByUserId(id));
@@ -48,6 +49,7 @@ public class UserController {
     }
 
     //find all users
+    @PreAuthorize("hasRole('ROLE_ADMIN') and hasAnyAuthority('READ_PRIVILEGE', 'WRITE_PRIVILEGE')")
     @GetMapping("/all-users")
     public ResponseEntity<List<UserDto>> findAllUsers(){
         return ResponseEntity.ok(userService.findAllUsers());
@@ -61,5 +63,10 @@ public class UserController {
     @GetMapping("/bulk-status/{requestId}")
     public ResponseEntity<BulkRegistrationStatus> bulkUserRegistrationStatus(@PathVariable("requestId") String requestId){
         return ResponseEntity.ok(userService.checkStatus(requestId));
+    }
+
+    @GetMapping("/validate/{userId}")
+    public ResponseEntity<Boolean> validateUser(@PathVariable("userId") Long userId){
+        return ResponseEntity.ok(true);
     }
 }

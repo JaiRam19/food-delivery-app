@@ -1,6 +1,7 @@
 package com.codewave.productservice.service;
 
 import com.codewave.productservice.dto.ProductDto;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public interface ProductService {
     ProductDto addProduct(ProductDto productDto);
     ProductDto updateProduct(ProductDto productDto, Long productId);
-    ProductDto getProductById(Long productId);
+    ProductDto getProductById(Long productId, Jwt jwt);
     List<ProductDto> getAllProducts();
     String deleteProductById(Long productId);
     List<ProductDto> addMoreProducts(List<ProductDto> productDto);

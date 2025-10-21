@@ -9,7 +9,9 @@ import com.codewave.productservice.repository.ProductRepository;
 import com.codewave.productservice.service.ProductService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Transactional
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private ProductMapper productMapper;
@@ -65,7 +68,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long productId) {
+    public ProductDto getProductById(Long productId, Jwt jwt) {
+        //Extract roles
+        //List<String> authorities = jwt.getClaimAsStringList("realm_access.roles");
+        List<String> authorities = jwt.getClaimAsStringList("data-roles");
+        log.info("extracted claims: {}", authorities.toString());
+        //find product category first from db
+        String productCategory = productRepository.findProductCategoryByProductId(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "Id", String.valueOf(productId)));
+
+
+        //check if user has access to the product
+        //incoming data role from key cloak is like DATA_ROLE_PRODUCT_* (for data roles access) and checking it against the database product category
+        //if they match the use has access to view the product if they don't match the user doesn't have access for the product
+        boolean hasAccess = authorities.stream().anyMatch(authority -> authority.startsWith("DATA_ROLE_PRODUCT_CATEGORY_") && authority.endsWith(productCategory.toUpperCase()));
+
+        //return No authorization message
+        if(!hasAccess)
+            throw new APIException("No Authorization to view the Product", HttpStatus.FORBIDDEN);
+
+        //if he has access return the product details
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product", "Id", String.valueOf(productId)));
         return productMapper.mapToDto(product);

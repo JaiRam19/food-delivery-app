@@ -1,17 +1,21 @@
 package com.codewave.auth_service.service.jwt;
 
-import com.codewave.auth_service.entity.UserCredentials;
+import com.codewave.auth_service.repository.UserCredentialRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,10 +23,18 @@ public class JwtService {
 
     @Value("${secret.key}")
     private String SECRET_KEY;
+    @Autowired
+    private UserCredentialRepository repository;
 
-    public String generateToken(String username) {
+    public String generateToken(Authentication authenticate) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        List<String> authorities = authenticate.getAuthorities()
+                .stream().
+                map(GrantedAuthority::getAuthority)
+                .toList();
+        System.out.println(authenticate.getName()+", authorities are: "+ authorities);
+        claims.put("authorities", authorities);
+        return createToken(claims, authenticate.getName());
     }
 
     public void validateToken(String token) throws Exception{

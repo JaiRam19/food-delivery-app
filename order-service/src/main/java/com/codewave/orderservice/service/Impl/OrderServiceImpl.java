@@ -70,8 +70,8 @@ public class OrderServiceImpl implements OrderService {
                         .peek(order ->
                         {
                             Long availableProductQuantity = productIdsAndStock.get(order.getProductId());
-                            if (availableProductQuantity == null | availableProductQuantity < order.getQuantity()) {
-                                throw new APIException(null);
+                            if (availableProductQuantity == null || availableProductQuantity < order.getQuantity()) {
+                                throw new APIException("Insufficient quantity...");
                             }
                         })
                         .collect(Collectors.toList())
@@ -157,7 +157,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
-    private OrderResponse mapToOrderResponse(Long orderId) {
+    public OrderResponse mapToOrderResponse(Long orderId) {
         Order savedOrder = orderRepository.findById(orderId).get();
 
         //Order response

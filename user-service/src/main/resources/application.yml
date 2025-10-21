@@ -6,6 +6,12 @@ spring:
 
   application:
     name: USER-SERVICE
+    #--> To connect with keycloak server
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/jairam1
 
   datasource:
     driver-class-name: org.postgresql.Driver
